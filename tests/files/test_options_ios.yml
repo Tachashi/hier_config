@@ -64,29 +64,13 @@ per_line_sub:
   replace: ''
 - search: ^! NVRAM config last updated.*
   replace: ''
-- search: ^ntp clock-period .*
-  replace: ''
-- search: ^version.*
-  replace: ''
-- search: ^ logging event link-status$
-  replace: ''
-- search: ^ logging event subif-link-status$
-  replace: ''
-- search: ^\s*ipv6 unreachables disable$
-  replace: ''
 - search: ^end$
   replace: ''
 - search: '^\s*[#!].*'
   replace: ''
-- search: ^ no ip address
+- search: ^conf.*\st.*$
   replace: ''
-- search: ^ exit-peer-policy
-  replace: ''
-- search: ^ exit-peer-session
-  replace: ''
-- search: ^ exit-address-family
-  replace: ''
-- search: ^crypto key generate rsa general-keys.*$
+- search: ^\s*exit$
   replace: ''
 
 idempotent_commands_blacklist: []
@@ -116,3 +100,4 @@ negation_default_when: []
 #   - startswith: description
 #   use: no description
 negation_negate_with: []
+

@@ -245,10 +245,10 @@ class HConfig(HConfigBase):
         # Assert that we are not in a banner still for some reason
         assert not in_banner
 
-        if self.host.os in ['ios']:
-            self._remove_acl_remarks()
-            self._add_acl_sequence_numbers()
-            self._rm_ipv6_acl_sequence_numbers()
+#        if self.host.os in ['ios']:
+#            self._remove_acl_remarks()
+#            self._add_acl_sequence_numbers()
+#            self._rm_ipv6_acl_sequence_numbers()
 
         return self
 

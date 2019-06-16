@@ -1,5 +1,6 @@
 from hier_config.text_match import TextMatch
 import hier_config.helpers as H
+import re
 
 
 class HConfigBase(object):
@@ -89,6 +90,42 @@ class HConfigBase(object):
 
         return new_child
 
+    def check_idempotent_command(self, other_children):
+        print(other_children)
+        for rule in self.options['idempotent_commands']:
+            if rule['lineage'][0]['startswith'] in str(self):
+                for cmd in list(rule['lineage'][1]['startswith']):
+                    print(cmd)
+                    if cmd in str(other_children):
+                        return cmd
+
+    def add_deep_copy_del_of(self, child_to_add, merged=False):
+        """
+        Add a nested copy of a child to self
+
+        :param child_to_add: type HConfigCHild
+        :param merged: type boolean, default False
+
+        :return: new_child
+
+        """
+
+        new_child = self.add_shallow_copy_of(child_to_add, merged=merged)
+        for child in child_to_add.children:
+            if 'no ' in str(child):
+                child_str = str(child)
+                child_str = child_str.lstrip('no ')
+                new_child.del_child_by_text_re('.*'+child_str+'.*')
+            elif child_to_add.check_idempotent_command(child) is not None:
+                print('this command is idempotent')
+                cmd = child_to_add.check_idempotent_command(child)
+                new_child.del_child_by_text_re('.*'+cmd+'.*')
+                new_child.add_deep_copy_of(child, merged=merged)
+            else:
+                new_child.add_deep_copy_of(child, merged=merged)
+
+        return new_child
+
     def to_tag_spec(self, tags):
         """
         Returns the configuration as a tag spec definition
@@ -111,6 +148,14 @@ class HConfigBase(object):
         if text in self.children_dict:
             self.children[:] = [c for c in self.children if c.text != text]
             self.rebuild_children_dict()
+
+    def del_child_by_text_re(self, text):
+        """ Delete all children with the provided text(regex) """
+        for child_cmd in self.children_dict.keys():
+            result = re.match(text, child_cmd)
+            if result:
+                self.children[:] = [c for c in self.children if c.text != result.group()]
+                self.rebuild_children_dict()
 
     def del_child(self, child):
         """
